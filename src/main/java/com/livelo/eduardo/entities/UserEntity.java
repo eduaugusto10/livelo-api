@@ -24,6 +24,7 @@ public class UserEntity {
 	private String cpf;
 	private String gender;
 	private Date birth;
+	private String state;
 		
 }
 

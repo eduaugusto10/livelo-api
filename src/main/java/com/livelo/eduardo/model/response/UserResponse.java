@@ -10,4 +10,5 @@ public class UserResponse {
 
 	private String message;
 	private List<UserEntity> data;
+	private Integer statusCode;
 }

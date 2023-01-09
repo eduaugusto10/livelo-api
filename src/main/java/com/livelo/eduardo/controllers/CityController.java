@@ -1,9 +1,5 @@
 package com.livelo.eduardo.controllers;
 
-import java.util.List;
-
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +14,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.livelo.eduardo.entities.CityCreateEntity;
-import com.livelo.eduardo.entities.CityEntity;
 import com.livelo.eduardo.model.response.CityResponse;
 import com.livelo.eduardo.service.CityService;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @RestController
 @RequestMapping(path = "/api")
 public class CityController {
@@ -33,71 +25,75 @@ public class CityController {
 	private CityService cityService;
 
 	@PostMapping(path = "/city")
-	@ResponseStatus(code=HttpStatus.CREATED)
-	public CityResponse store(@RequestBody CityCreateEntity cityEntity) {
-
+	@ResponseStatus(code = HttpStatus.CREATED)
+	public ResponseEntity<CityResponse> store(@RequestBody CityCreateEntity cityEntity) {
+		CityResponse response = new CityResponse();
 		try {
-			CityResponse response = new CityResponse();
-			String message = cityService.Store(cityEntity);
-			response.setMessage("Cidade cadastrada com sucesso");
-			return response;
+
+			response = cityService.store(cityEntity);
+			if (response.getStatusCode() == 200) {
+				return new ResponseEntity<CityResponse>(response, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<CityResponse>(response, HttpStatus.CREATED);
+			}
 		} catch (Exception e) {
 			// TODO: handle exception
+			response.setStatusCode(500);
+			response.setMessage("Erro geral no sistema");
+			return new ResponseEntity<CityResponse>(response, HttpStatus.CONFLICT);
 		}
-		return null;
 	}
 
 	/*
-	 * Type = 1 get city by city name,
-	 * Type = 2 get all city by state,
+	 * Type = 1 get city by city name, Type = 2 get all city by state,
 	 */
 	@GetMapping(path = "/city")
-	public CityResponse get(@RequestParam Integer type, @RequestParam(required=false) String name, @RequestParam(required=false) Integer stateid) {
+	public ResponseEntity<CityResponse> get(@RequestParam Integer type, @RequestParam(required = false) String name,
+			@RequestParam(required = false) Integer stateid) {
+		CityResponse response = new CityResponse();
 		try {
-			CityResponse response = new CityResponse();
-			List<CityEntity> entity = null;
-			if(type==1) entity = cityService.GetCityByName(name);
-			else entity = cityService.GetCityByState(stateid);
-			
-			response.setData(entity);
 
-			if(entity.size()>0) response.setMessage("Sucesso");
-			else response.setMessage("Nenhuma cidade cadastrada");
-			
-			return response;
-
+			if (type == 1)
+				response = cityService.getCityByName(name);
+			else
+				response = cityService.getCityByState(stateid);
+			return new ResponseEntity<CityResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			// TODO: handle exception
-			return null;
+			response.setStatusCode(500);
+			response.setMessage("Erro geral no sistema");
+			return new ResponseEntity<CityResponse>(response, HttpStatus.CONFLICT);
 		}
 	}
 
 	@PutMapping(path = "/city")
-	public CityResponse update(@RequestBody CityCreateEntity cityEntity) {
+	public ResponseEntity<CityResponse> update(@RequestBody CityCreateEntity cityEntity) {
+		CityResponse response = new CityResponse();
+
 		try {
-			CityResponse response = new CityResponse();
-			List<CityCreateEntity> entity = cityService.Update(cityEntity);
-			response.setMessage("Cidade alterada com sucesso");
-			return response;
+			response = cityService.update(cityEntity);
+			return new ResponseEntity<CityResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			// TODO: handle exception
+			response.setStatusCode(500);
+			response.setMessage("Erro geral no sistema");
+			return new ResponseEntity<CityResponse>(response, HttpStatus.CONFLICT);
 		}
-		return null;
 
 	}
 
 	@DeleteMapping(path = "/city")
-	public CityResponse delete(@RequestParam Integer id) {
-		System.out.println(id);
+	public ResponseEntity<CityResponse> delete(@RequestParam Integer id) {
+		CityResponse response = new CityResponse();
+
 		try {
-			
-			CityResponse response = new CityResponse();
-			cityService.Delete(id);
-			response.setMessage("Cidade deletada com sucesso");
-			return response;
+			response = cityService.delete(id);
+			return new ResponseEntity<CityResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			// TODO: handle exception
+			response.setStatusCode(500);
+			response.setMessage("Erro geral no sistema");
+			return new ResponseEntity<CityResponse>(response, HttpStatus.CONFLICT);
 		}
-		return null;
 	}
 }

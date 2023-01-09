@@ -11,4 +11,5 @@ public class CityResponse {
 
 	private String message;
 	private List<CityEntity> data;
+	private Integer statusCode;
 }
