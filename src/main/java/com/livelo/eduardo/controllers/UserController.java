@@ -62,11 +62,11 @@ public class UserController {
 	}
 
 	@PutMapping(path = "/user")
-	public ResponseEntity<UserResponse> update(@RequestBody UserCreateEntity userEntity) {
+	public ResponseEntity<UserResponse> update(@RequestBody UserCreateEntity userEntity, @RequestParam Integer id) {
 		UserResponse response = new UserResponse();
 
 		try {
-			response = userService.update(userEntity);
+			response = userService.update(userEntity,id);
 			return new ResponseEntity<UserResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			// TODO: handle exception

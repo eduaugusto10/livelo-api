@@ -23,15 +23,15 @@ public class UserService {
 	private UserCreateRepository userCreateRepository;
 
 	public UserResponse store(UserCreateEntity userEntity) throws LiveloException {
-		
+
 		UserResponse response = new UserResponse();
-		
+
 		try {
 
 			UserResponse userCPFExists = getByCPF(userEntity.getCpf());
 			UserResponse userEmailExits = getByEmail(userEntity.getEmail());
 
-			if (userCPFExists.getData().size() <= 0 && userEmailExits.getData().size() <= 0) {				
+			if (userCPFExists.getData().size() <= 0 && userEmailExits.getData().size() <= 0) {
 				UserCreateEntity entities = new UserCreateEntity();
 				entities.setName(userEntity.getName());
 				entities.setCityId(userEntity.getCityId());
@@ -57,29 +57,35 @@ public class UserService {
 
 	public UserResponse getByCPF(String cpf) {
 		UserResponse response = new UserResponse();
-		
+
 		try {
 			List<UserEntity> entities = userRepository.getUserByCpf(cpf);
 			response.setData(entities);
 			response.setStatusCode(200);
-			response.setMessage("Usuário encontrados");
+			if (entities.size() <= 0)
+				response.setMessage("Nenhum usuário encontrado");
+			else
+				response.setMessage("Usuário(s) encontrado(s)");
 			return response;
 		} catch (Exception e) {
 			// TODO: handle exception
 			response.setMessage("Erro geral no sistema");
 			response.setStatusCode(500);
 			return response;
-		}		
+		}
 	}
 
 	public UserResponse getByEmail(String email) {
 		UserResponse response = new UserResponse();
-		
+
 		try {
 			List<UserEntity> entities = userRepository.getUserByEmail(email);
 			response.setData(entities);
 			response.setStatusCode(200);
-			response.setMessage("Usuário encontrados");
+			if (entities.size() <= 0)
+				response.setMessage("Nenhum usuário encontrado");
+			else
+				response.setMessage("Usuário(s) encontrado(s)");
 			return response;
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -87,34 +93,36 @@ public class UserService {
 			response.setStatusCode(500);
 			return response;
 		}
-				
+
 	}
 
 	public UserResponse getByName(String name) {
 		UserResponse response = new UserResponse();
-		
+
 		try {
-			List<UserEntity> entities = userRepository.getUserByName(name);	
+			List<UserEntity> entities = userRepository.getUserByName(name);
 			response.setData(entities);
 			response.setStatusCode(200);
-			response.setMessage("Usuário encontrados");
+			if (entities.size() <= 0)
+				response.setMessage("Nenhum usuário encontrado");
+			else
+				response.setMessage("Usuário(s) encontrado(s)");
 			return response;
 		} catch (Exception e) {
 			// TODO: handle exception
 			response.setMessage("Erro geral no sistema");
 			response.setStatusCode(500);
 			return response;
-		}		
+		}
 	}
 
 	public UserResponse delete(Integer id) {
-		
+
 		UserResponse response = new UserResponse();
-		
+
 		try {
 			System.out.println(id);
 			userCreateRepository.deleteById(id);
-			response.setMessage("Usuário deletado com sucesso");
 			response.setStatusCode(200);
 			return response;
 		} catch (Exception e) {
@@ -125,12 +133,12 @@ public class UserService {
 		}
 	}
 
-	public UserResponse update(UserCreateEntity userEntity) {
-		
+	public UserResponse update(UserCreateEntity userEntity, Integer id) {
+
 		UserResponse response = new UserResponse();
-		
+
 		try {
-			Optional<UserCreateEntity> optionalEntities = userCreateRepository.findById(userEntity.getId());
+			Optional<UserCreateEntity> optionalEntities = userCreateRepository.findById(id);
 
 			UserCreateEntity entities = optionalEntities.get();
 			entities.setName(userEntity.getName());
@@ -139,7 +147,7 @@ public class UserService {
 			response.setMessage("Usuário atualizado com sucesso");
 			response.setStatusCode(200);
 			return response;
-			
+
 		} catch (Exception e) {
 			// TODO: handle exception
 			response.setMessage("Erro geral no sistema");

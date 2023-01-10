@@ -67,11 +67,11 @@ public class CityController {
 	}
 
 	@PutMapping(path = "/city")
-	public ResponseEntity<CityResponse> update(@RequestBody CityCreateEntity cityEntity) {
+	public ResponseEntity<CityResponse> update(@RequestBody CityCreateEntity cityEntity,@RequestParam Integer id) {
 		CityResponse response = new CityResponse();
 
 		try {
-			response = cityService.update(cityEntity);
+			response = cityService.update(cityEntity,id);
 			return new ResponseEntity<CityResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			// TODO: handle exception

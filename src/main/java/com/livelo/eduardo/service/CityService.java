@@ -85,17 +85,26 @@ public class CityService {
 		return response;
 	}
 
-	public CityResponse update(CityCreateEntity cityEntity) {
+	public CityResponse update(CityCreateEntity cityEntity, Integer id) {
 		CityResponse response = new CityResponse();
+		
 		try {
-			Optional<CityCreateEntity> optionalEntities = cityCreateRepository.findById(cityEntity.getId());
+			Optional<CityCreateEntity> optionalEntities = cityCreateRepository.findById(id);
+			List<CityEntity> cityExists = cityRepository.getAllCityByName(cityEntity.getCity());
+			
+			if (cityExists.size() <= 0) {
+				CityCreateEntity entities = optionalEntities.get();
+				entities.setCity(cityEntity.getCity());
+				cityCreateRepository.save(entities);
+				response.setMessage("Cidade atualizada com sucesso");
+				response.setStatusCode(200);
+				return response;
+			} else {
+				response.setMessage("Cidade já cadastrada");
+				response.setStatusCode(409);
+				return response;
+			}
 
-			CityCreateEntity entities = optionalEntities.get();
-			entities.setCity(cityEntity.getCity());
-			cityCreateRepository.save(entities);
-			response.setMessage("Cidade atualizada com sucesso");
-			response.setStatusCode(200);
-			return response;
 		} catch (Exception e) {
 			// TODO: handle exception
 			response.setMessage("Erro geral no sistema");
