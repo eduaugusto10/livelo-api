@@ -1,0 +1,37 @@
+version: '3'
+
+services:  
+    springboot-app:                       
+      image: eduaugusto10/livelo-api               
+      container_name: livelo-api  
+      build: .   
+      ports:
+        - "5000:5000"                                  
+      restart: always                    
+      environment:
+        MYSQL_HOST: eduardo
+        MYSQL_USER: eduardo
+        MYSQL_PASSWORD: eduardo
+        MYSQL_PORT: 3306
+    frontend-app:
+      image: eduaugusto10/livelo-app
+      container_name: livelo-app
+      build: .
+      ports: 
+        - 3000:3000
+      restart: always
+      
+    mysql-livelo:
+      container_name: livelo-mysqldb
+      image: eduaugusto10/livelo-mysql
+      ports:
+        - 3306:3306
+      restart: always 
+      environment:
+        MYSQL_DATABASE: livelo
+        MYSQL_ROOT_PASSWORD: eduardo
+        MYSQL_PASSWORD: eduardo
+        MYSQL_USER: eduardo
+       
+        
+        
